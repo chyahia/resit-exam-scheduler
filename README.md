@@ -45,13 +45,16 @@
    cd resit-exam-scheduler
 
 2.تثبيت الحزم والمكتبات المطلوبة:
+    ```bash
 python -m pip install streamlit python-docx streamlit-keyup
 
 3.تشغيل التطبيق:
+    ```bash
 python -m streamlit run app.py
 سيتم فتح التطبيق تلقائياً في متصفحك الافتراضي على الرابط: http://localhost:8501
 
 📋 نظرة على مراحل العمل في النظام
+
 1.إدخال البيانات: تسجيل الأساتذة، القاعات، والمستويات.
 
 2.الحذف والتعديل: إدارة قاعدة البيانات بمرونة.
