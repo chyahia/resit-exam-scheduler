@@ -46,11 +46,11 @@
 
 2.تثبيت الحزم والمكتبات المطلوبة:
     ```bash
-python -m pip install streamlit python-docx streamlit-keyup
+    python -m pip install streamlit python-docx streamlit-keyup
 
 3.تشغيل التطبيق:
     ```bash
-python -m streamlit run app.py
+    python -m streamlit run app.py
 سيتم فتح التطبيق تلقائياً في متصفحك الافتراضي على الرابط: http://localhost:8501
 
 📋 نظرة على مراحل العمل في النظام
