@@ -1,9 +1,56 @@
 import sqlite3
 import json
 import os
+import sys
 
-DB_PATH = "schedule_database.db"
+# ==========================================
+# دالة المسار الديناميكي لقاعدة البيانات
+# ==========================================
+def get_database_path():
+    """
+    دالة ذكية لتحديد مسار قاعدة البيانات:
+    تحاول الكتابة في المسار الحالي، وإذا كان محمياً تنتقل إلى AppData/Roaming
+    """
+    db_name = 'schedule_database.db'
+    app_folder_name = 'ResitExamScheduler' # اسم المجلد الذي سيُنشأ في AppData
+    
+    # 1. تحديد مسار تشغيل البرنامج (سواء كان ملف بايثون أو exe)
+    if getattr(sys, 'frozen', False):
+        base_path = os.path.dirname(sys.executable)
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        
+    local_db_path = os.path.join(base_path, db_name)
+    
+    # 2. فحص صلاحية الكتابة في المجلد الحالي عبر محاولة إنشاء ملف مؤقت مخفي
+    test_file_path = os.path.join(base_path, '.write_test')
+    try:
+        with open(test_file_path, 'w') as f:
+            f.write('test')
+        os.remove(test_file_path) # نحذفه فوراً إذا نجحت العملية
+        return local_db_path      # المجلد مسموح، نرجع المسار المحلي
+        
+    except (IOError, PermissionError):
+        # 3. المجلد محمي! ننتقل فوراً إلى مجلد AppData/Roaming
+        appdata_path = os.environ.get('APPDATA')
+        if not appdata_path:
+            # خطة طوارئ إضافية في حال لم يجد متغير النظام
+            appdata_path = os.path.expanduser('~')
+            
+        roaming_dir = os.path.join(appdata_path, app_folder_name)
+        
+        # إنشاء مجلد للبرنامج داخل Roaming إذا لم يكن موجوداً
+        if not os.path.exists(roaming_dir):
+            os.makedirs(roaming_dir)
+            
+        return os.path.join(roaming_dir, db_name)
 
+# تحديد مسار قاعدة البيانات بناءً على نتيجة الفحص
+DB_PATH = get_database_path()
+
+# ==========================================
+# دوال إدارة الاتصال والجداول
+# ==========================================
 def get_connection():
     """إنشاء اتصال بقاعدة البيانات"""
     conn = sqlite3.connect(DB_PATH)
